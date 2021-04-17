@@ -47,7 +47,7 @@ class Database{
 
 
 class Product{
-  function __construct($id=null,$vendor_name,$vendor_email,$product_name,$product_price,$quantity,$category){
+  function __construct($id=null,$vendor_name,$vendor_email,$product_name,$product_price,$quantity,$category,$imgs=array()){
     $this->vendor_name=$vendor_name;
     $this->vendor_email=$vendor_email;
     $this->product_name=$product_name;
@@ -55,10 +55,24 @@ class Product{
     $this->quantity=$quantity;
     $this->id=$id;
     $this->category=$category;
+    $this->imgs=$imgs;
+  }
+
+  function add_product_img($img_path){
+    array_push($this->imgs, $img_path);
+  }
+
+  function save_imgs($db){
+    $con = $db->db;
+    $ser_imgs = serialize($this->imgs);
+    $res =  $con->query("UPDATE products SET product_imgs='$ser_imgs' WHERE id='$this->id'");
+    return $res;
   }
   static function from_db($result){
     extract($result);
-    return new Product($id,$ven_name,$ven_email,$pro_name,$pro_price,$quantity,$category);
+    //deserialize images
+
+    return new Product($id,$ven_name,$ven_email,$pro_name,$pro_price,$quantity,$category,unserialize($product_imgs));
   }
 
   function save($db){
@@ -68,9 +82,10 @@ class Product{
     }
     $con = $db->db;
 
-    $insert_q="INSERT INTO products (ven_name,ven_email,pro_name,pro_price,quantity,category) VALUES ('$this->vendor_name','$this->vendor_email','$this->product_name','$this->product_price','$this->quantity','$this->category')";
+    $no_imgs = serialize(array());
+    $insert_q="INSERT INTO products (ven_name,ven_email,pro_name,pro_price,quantity,category,product_imgs) VALUES ('$this->vendor_name','$this->vendor_email','$this->product_name','$this->product_price','$this->quantity','$this->category','$no_imgs')";
     $success = $con->query($insert_q);
-
+    $this->id = $con->insert_id;
      return $success;
   }
 }

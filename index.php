@@ -1,4 +1,7 @@
 <?php 
+
+//TODO: Vendors Panel , Product Images Upload , UI Design
+
 if(isset($_GET['order_req']) && (bool)$_GET['order_req']){
   $su = (bool) $_GET['success'];
   if($su==0){
@@ -35,7 +38,8 @@ if(isset($_GET['order_req']) && (bool)$_GET['order_req']){
     <div class="content">
       <?php foreach ($products as $p): ?>
         <div class="p-box">
-          <img class="p-tn" src="mb.jpg" alt="thumbnail" >
+          <!--TODO: slideshow to be created  -->
+          <img class="p-tn" src=<?=$p->imgs[0]?> alt="thumbnail" >
         
         <div class="p-info">
         <p id="p-title" class="p-title"><?=$p->product_name ?>  </p>
@@ -54,6 +58,8 @@ if(isset($_GET['order_req']) && (bool)$_GET['order_req']){
             <input type='hidden' name="quantity" value=<?=$p->quantity ?> > 
             <input type='hidden'  name="category" value=<?=$p->category  ?>>  
             <input type='hidden' name="id" value=<?=$p->id ?> > 
+            <input type='hidden' name="product_imgs" value=<?= serialize($p->imgs)?> > 
+
             
             <button type="submit" class="op-btn buy" > Buy </button>
           </form>

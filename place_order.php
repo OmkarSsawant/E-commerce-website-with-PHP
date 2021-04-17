@@ -28,7 +28,9 @@ $con=$db->db;
             $cust_name = $_POST['customer-name'];
             $cust_phone = $_POST['customer-phone'];
             $product_id = $_POST['id']; 
+            $pro_name = $_POST['pro_name'];
             $address=$_POST['address'];
+            $imgs = unserialize($_POST['product_imgs']);
             
           $order = new Order(null,$product_id,$qty,$cust_name,$cust_email,$cust_phone,$address,null);
           #this inserted_json var can later be used for REST API 
@@ -42,6 +44,13 @@ $con=$db->db;
               $update_product = "DELETE FROM products WHERE id=$product_id";
               $updated_product_res = $con->query($update_product);
               $req_proc = $updated_product_res;
+            
+              #also delete the product related imgs
+              foreach($imgs as $img){
+                unlink($img);
+              }
+              #then remove parent dir
+              rmdir('pictures/'.$pro_name . $product_id);
             }else{
             #decrease the quantity s the order is placed
             $update_product = "UPDATE products SET quantity=$rem WHERE id=$product_id";
@@ -53,9 +62,7 @@ $con=$db->db;
               header('Location:index.php?order_req=true&success=true');   
             }else{
               remove_order($con);
-              print_r($req_proc);
-
-              // fail();
+              fail();
             }
           }else{
             fail();
@@ -75,7 +82,7 @@ $con=$db->db;
       $feilds = array("customer name" => "text","customer email"=> "email","customer phone"=> "text","quantity"=>"number");
         function input_field($label,$type){
             $name=str_replace(" ","-",$label);
-          return "<div class='fld-content'> <label class='fld-label' for='$name'>$label</label> <input class='fld-in' name='$name' type='$type'/> </div> <br>";
+          return "<div class='fld-content'> <label class='fld-label' for='$name'>$label</label> <input class='fld-in' name='$name' type='$type' required/> </div> <br>";
         }
 
         foreach($feilds as $label=>$type){
