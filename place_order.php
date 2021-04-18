@@ -31,8 +31,9 @@ $con=$db->db;
             $pro_name = $_POST['pro_name'];
             $address=$_POST['address'];
             $imgs = unserialize($_POST['product_imgs']);
+            $ven_email = $_POST['ven_email'];
             
-          $order = new Order(null,$product_id,$qty,$cust_name,$cust_email,$cust_phone,$address,null);
+          $order = new Order(null,$product_id,$qty,$cust_name,$cust_email,$cust_phone,$address,$ven_email,null);
           #this inserted_json var can later be used for REST API 
           $inserted_json =  $order->save($db);
 

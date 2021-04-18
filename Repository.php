@@ -39,6 +39,38 @@ class Database{
     }
     return $products;
   }
+
+  function fetch_orders_of($ven_email){
+    $con = $this->db;
+    if(!isset($con)) return null;
+    
+    $ven_orders = array();
+    #get the product for vendor_email and product name price 
+    $ven_order_q = "SELECT * FROM Orders WHERE ven_email='$ven_email'";
+
+    $order = $con->query($ven_order_q);
+    while ($raw_order = $order->fetch_assoc()) {
+      array_push($ven_orders,Order::from_db($raw_order));
+    }
+    return $ven_orders;
+  }
+
+function fetch_product($product_id){
+    $con = $this->db;
+    if(!isset($con)) return null;
+    
+    #get the product for vendor_email and product name price 
+    $ven_prod_q = "SELECT * FROM products WHERE id='$product_id'";
+    $product=null;
+    $product_res = $con->query($ven_prod_q);
+    while ($raw_product = $product_res->fetch_assoc()) {
+      $product = Product::from_db($raw_product);
+    }
+    return $product;
+  }
+
+
+
   function __destruct()
  {
    mysqli_close($this->db);
@@ -93,7 +125,7 @@ class Product{
 
 class Order{
 
-   function __construct($id=null,$p_id,$qty,$cust_name,$cust_email,$cust_phone,$address,$shopped_at=null) {
+   function __construct($id=null,$p_id,$qty,$cust_name,$cust_email,$cust_phone,$address,$ven_email,$shopped_at=null) {
     $this->id = $id;
     $this->product_id = $p_id;
     $this->quantity = $qty;
@@ -102,18 +134,18 @@ class Order{
     $this->customer_phone = $cust_phone;
     $this->shopped_at = $shopped_at;
     $this->address=$address;
+    $this->ven_email=$ven_email;
   }
 
   static function from_db($result){
     extract($result);
-    return new Order($id,$product_id,$quantity,$customer_name,$customer_email,$customer_phone,$address,$shopped_at);
+    return new Order($id,$product_id,$quantity,$customer_name,$customer_email,$customer_phone,$address,$ven_email,$shopped_at);
   }
 
   function save($db){
     $con = $db->db;
-
-  $insert_q = "INSERT INTO orders(id,product_id,quantity,customer_name,customer_email,customer_phone,`address`,shopped_at)
-     VALUES (null,'$this->product_id','$this->quantity','$this->customer_name','$this->customer_email','$this->customer_phone','$this->address',CURRENT_TIMESTAMP)";
+    $insert_q = "INSERT INTO orders(id,product_id,quantity,customer_name,customer_email,customer_phone,`address`,ven_email,shopped_at)
+     VALUES (null,'$this->product_id','$this->quantity','$this->customer_name','$this->customer_email','$this->customer_phone','$this->address','$this->ven_email',CURRENT_TIMESTAMP)";
     $success = $con->query($insert_q);
     
     if(!$success) {

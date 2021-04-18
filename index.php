@@ -1,6 +1,6 @@
 <?php 
 
-//TODO: Vendors Panel , Product Images Upload , UI Design
+//TODO:  UI Design
 
 if(isset($_GET['order_req']) && (bool)$_GET['order_req']){
   $su = (bool) $_GET['success'];
@@ -35,12 +35,20 @@ if(isset($_GET['order_req']) && (bool)$_GET['order_req']){
     
      ?>
     <a href="upload.php">upload</a>
+    <a href="orders.php"> display Orders </a>
+
     <div class="content">
       <?php foreach ($products as $p): ?>
         <div class="p-box">
           <!--TODO: slideshow to be created  -->
-          <img class="p-tn" src=<?=$p->imgs[0]?> alt="thumbnail" >
+          <div class="slideshow">
+            <?php foreach ($p->imgs as $img): ?> 
+
+              <img class="p-tn" width="12vw" height="22vh" src=<?=$img?> alt="thumbnail" >            
+            <?php endforeach;?>
+          </div>
         
+
         <div class="p-info">
         <p id="p-title" class="p-title"><?=$p->product_name ?>  </p>
         <p id="p-price" class="p-price"><?=$p->product_price ?>  ₹ </p>
